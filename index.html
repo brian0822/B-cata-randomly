@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>桃園機場 B類駕駛許可證 題庫複習</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #2d3748;
+    --accent: #f97316;
+    --accent2: #fb923c;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --blue: #3b82f6;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+    --text-mid: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans TC', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+
+  header { text-align: center; padding: 40px 0 30px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3);
+    border-radius: 20px; padding: 6px 16px; font-size: 12px; color: var(--accent2);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+  h1 { font-size: clamp(22px,4vw,36px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.2; color: #fff; }
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--text-mid); margin-top: 8px; font-size: 14px; }
+
+  .mode-bar { display: flex; gap: 8px; margin: 24px 0 20px; flex-wrap: wrap; justify-content: center; }
+  .mode-btn { padding: 8px 20px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-mid); cursor: pointer; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; font-weight: 500; transition: all .2s; }
+  .mode-btn:hover { border-color: var(--accent); color: var(--text); }
+  .mode-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+
+  .stats-bar { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--accent2); }
+  .stat-val.green { color: var(--green); }
+  .stat-val.red { color: var(--red); }
+  .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  .progress-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .progress-label { font-size: 12px; color: var(--text-dim); white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
+  .progress-bar { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 3px; transition: width .5s ease; }
+
+  .runway-deco { height: 3px; background: repeating-linear-gradient(90deg, var(--accent) 0, var(--accent) 20px, transparent 20px, transparent 40px); margin: 20px 0; border-radius: 2px; opacity: 0.4; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 16px; animation: slideIn .3s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  .q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .q-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); padding: 3px 10px; border-radius: 6px; }
+  .q-type { font-size: 11px; color: var(--text-dim); background: var(--surface2); padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border); }
+  .q-keyword { margin-left: auto; font-size: 11px; color: var(--yellow); background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.2); padding: 3px 10px; border-radius: 6px; }
+
+  .q-text { font-size: 16px; font-weight: 500; line-height: 1.7; color: #fff; margin-bottom: 20px; }
+
+  /* Image area for picture questions */
+  .q-image { margin-bottom: 18px; display: flex; justify-content: center; }
+  .q-image-inner { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 24px; display: flex; align-items: center; justify-content: center; min-height: 80px; }
+
+  /* CSS-drawn signs */
+  .sign-red { background: #dc2626; color: #fff; font-weight: 900; font-family: 'JetBrains Mono', monospace; padding: 8px 18px; font-size: 18px; border: 3px solid #fff; outline: 3px solid #dc2626; letter-spacing: 1px; }
+  .sign-black-yellow { background: #1a1a1a; color: #f59e0b; font-weight: 900; font-family: 'JetBrains Mono', monospace; padding: 8px 18px; font-size: 18px; border: 2px solid #f59e0b; letter-spacing: 1px; }
+  .sign-yellow-black { background: #f59e0b; color: #1a1a1a; font-weight: 900; font-family: 'JetBrains Mono', monospace; padding: 8px 18px; font-size: 18px; border: 2px solid #1a1a1a; letter-spacing: 1px; }
+  .sign-combo { display: flex; gap: 0; }
+  .sign-stop { background: #dc2626; color: #fff; font-weight: 900; font-family: 'Noto Sans TC', sans-serif; padding: 10px 16px; font-size: 14px; border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; flex-direction: column; border: 3px solid #fff; }
+  .sign-slow { background: #f59e0b; color: #1a1a1a; font-weight: 900; font-family: 'Noto Sans TC', sans-serif; padding: 10px 16px; font-size: 14px; border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border: 3px solid #1a1a1a; }
+
+  /* Line markings */
+  .marking-wrap { display: flex; flex-direction: column; gap: 4px; width: 120px; }
+  .mark-line { height: 6px; border-radius: 2px; }
+  .mark-solid { background: #f59e0b; }
+  .mark-dashed { background: repeating-linear-gradient(90deg, #f59e0b 0, #f59e0b 12px, transparent 12px, transparent 20px); }
+  .mark-white-solid { background: #fff; }
+  .mark-red-hatch { background: repeating-linear-gradient(45deg, #dc2626 0, #dc2626 6px, transparent 6px, transparent 12px); height: 50px; width: 80px; border: 2px solid #dc2626; }
+  .mark-yellow-hatch { background: repeating-linear-gradient(45deg, #f59e0b 0, #f59e0b 6px, transparent 6px, transparent 12px); height: 50px; width: 80px; border: 2px solid #f59e0b; }
+  .mark-grey-hatch { background: repeating-linear-gradient(45deg, #94a3b8 0, #94a3b8 6px, transparent 6px, transparent 12px); height: 50px; width: 80px; border: 2px solid #94a3b8; }
+  .mark-blue-box { width: 80px; height: 50px; border: 3px solid #60a5fa; background: rgba(96,165,250,0.08); display: flex; align-items: center; justify-content: center; }
+  .mark-parking-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #fff; background: var(--surface2); border: 2px solid #94a3b8; padding: 6px 10px; text-align: center; }
+  .mark-black-white { background: repeating-linear-gradient(90deg, #000 0, #000 10px, #fff 10px, #fff 20px); height: 8px; width: 120px; border: 1px solid #666; }
+  .mark-tow-zone { position: relative; width: 100px; height: 60px; border: 2px solid #3b82f6; background: rgba(59,130,246,0.08); }
+  .mark-tow-zone::after { content: '←EH1'; position: absolute; top: 2px; right: 2px; font-size: 10px; color: #60a5fa; font-family: 'JetBrains Mono', monospace; }
+
+  /* Apron diagram */
+  .apron-diagram { width: 140px; height: 90px; background: #1e293b; border: 2px solid #475569; border-radius: 4px; position: relative; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #94a3b8; font-family: 'JetBrains Mono', monospace; }
+  .apron-inner { background: rgba(34,197,94,.15); border: 2px solid #22c55e; width: 60px; height: 40px; position: absolute; left: 40px; top: 20px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #22c55e; }
+  .apron-circle { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #f59e0b; position: absolute; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; transition: all .2s; text-align: left; width: 100%; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 14px; line-height: 1.5; }
+  .option:hover:not(:disabled) { border-color: var(--accent); background: rgba(249,115,22,.08); }
+  .option-letter { min-width: 28px; height: 28px; border-radius: 6px; background: #0d1117; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--text-dim); flex-shrink: 0; }
+  .option.correct { border-color: var(--green); background: rgba(34,197,94,.1); }
+  .option.correct .option-letter { background: var(--green); color: #fff; border-color: var(--green); }
+  .option.wrong { border-color: var(--red); background: rgba(239,68,68,.1); }
+  .option.wrong .option-letter { background: var(--red); color: #fff; border-color: var(--red); }
+  .option:disabled { cursor: default; }
+
+  .tf-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tf-opt { padding: 20px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; text-align: center; font-size: 28px; font-weight: 900; transition: all .2s; color: var(--text-mid); font-family: 'JetBrains Mono', monospace; }
+  .tf-opt:hover:not(:disabled) { transform: scale(1.02); }
+  .tf-opt.tf-true:hover:not(:disabled) { border-color: var(--green); color: var(--green); background: rgba(34,197,94,.08); }
+  .tf-opt.tf-false:hover:not(:disabled) { border-color: var(--red); color: var(--red); background: rgba(239,68,68,.08); }
+  .tf-opt.correct { border-color: var(--green); color: var(--green); background: rgba(34,197,94,.1); }
+  .tf-opt.wrong { border-color: var(--red); color: var(--red); background: rgba(239,68,68,.1); }
+  .tf-opt:disabled { cursor: default; }
+  .tf-sub { font-size: 12px; font-weight: 400; font-family: 'Noto Sans TC', sans-serif; margin-top: 4px; }
+
+  .feedback { margin-top: 16px; padding: 14px 18px; border-radius: 10px; font-size: 14px; line-height: 1.6; display: none; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3); color: #86efac; }
+  .feedback.wrong-fb { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; }
+  .feedback-icon { font-size: 18px; margin-right: 8px; }
+
+  .actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .btn { padding: 12px 24px; border-radius: 10px; border: none; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; font-size: 14px; font-weight: 700; transition: all .2s; display: flex; align-items: center; gap: 8px; }
+  .btn-primary { background: var(--accent); color: #fff; flex: 1; }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface2); color: var(--text-mid); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--text); }
+
+  .result-screen { display: none; text-align: center; padding: 40px 20px; }
+  .result-screen.show { display: block; }
+  .result-score { font-size: 80px; font-weight: 900; font-family: 'JetBrains Mono', monospace; line-height: 1; margin: 20px 0; }
+  .result-grade { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+  .result-msg { color: var(--text-mid); font-size: 14px; margin-bottom: 30px; }
+
+  @media(max-width:600px){
+    .stats-bar{grid-template-columns:repeat(2,1fr)}
+    .card{padding:18px}
+    .q-keyword{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">TAOYUAN INTL AIRPORT · TPE/RCTP</div>
+    <h1>B類<span>駕駛許可證</span><br>題庫複習系統</h1>
+    <p class="subtitle">桃園國際機場空側駕駛許可證測驗 · 115年3月2日公布版</p>
+  </header>
+
+  <div class="mode-bar">
+    <button class="mode-btn active" onclick="setMode('all')">📋 全部題目</button>
+    <button class="mode-btn" onclick="setMode('single')">🔘 單選題</button>
+    <button class="mode-btn" onclick="setMode('truefalse')">✅ 是非題</button>
+    <button class="mode-btn" onclick="setMode('picture')">🖼️ 圖示題</button>
+    <button class="mode-btn" onclick="setMode('random')">🔀 隨機練習</button>
+    <button class="mode-btn" onclick="setMode('mock40')">🎯 模擬考40題</button>
+    <button class="mode-btn" onclick="setMode('wrong')">❌ 錯題複習</button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val" id="stat-total">0</div><div class="stat-label">總題數</div></div>
+    <div class="stat"><div class="stat-val" id="stat-done">0</div><div class="stat-label">已作答</div></div>
+    <div class="stat"><div class="stat-val green" id="stat-correct">0</div><div class="stat-label">答對</div></div>
+    <div class="stat"><div class="stat-val red" id="stat-wrong">0</div><div class="stat-label">答錯</div></div>
+  </div>
+
+  <div class="progress-wrap">
+    <span class="progress-label" id="prog-label">0 / 0</span>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    <span class="progress-label" id="prog-pct">0%</span>
+  </div>
+
+  <div class="runway-deco"></div>
+  <div id="quiz-area"></div>
+  <div class="result-screen" id="result-screen">
+    <div class="badge">測驗完成</div>
+    <div class="result-score" id="result-score"></div>
+    <div class="result-grade" id="result-grade"></div>
+    <div class="result-msg" id="result-msg"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="restartQuiz()">🔄 重新練習</button>
+      <button class="btn btn-secondary" onclick="setMode('wrong')">❌ 複習錯題</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// === Image HTML for picture questions ===
+const IMG = {
+  p1: `<div class="q-image-inner" style="flex-direction:column;gap:8px;text-align:center">
+        <div style="display:flex;gap:4px;align-items:center;background:#2d3748;padding:8px 12px;border-radius:6px;font-size:11px;color:#94a3b8;">
+          <span style="background:#f59e0b;color:#000;padding:2px 8px;font-weight:700;font-size:11px;">4m</span>
+          <span style="background:#f59e0b;color:#000;padding:2px 8px;font-weight:700;font-size:11px;">4m</span>
+          <span style="background:#f59e0b;color:#000;padding:2px 8px;font-weight:700;font-size:11px;">6m</span>
+        </div>
+        <div style="font-size:11px;color:#64748b;">裝備區白斜線格標線圖示</div>
+        <div class="mark-yellow-hatch" style="width:120px;height:40px;"></div>
+       </div>`,
+  p2: `<div class="q-image-inner" style="flex-direction:column;gap:8px;">
+        <div style="background:#1e293b;border:2px solid #475569;border-radius:6px;padding:8px 16px;text-align:center;">
+          <div style="background:#dc2626;border:2px solid #dc2626;border-radius:4px;padding:6px 12px;font-size:11px;color:#fff;font-weight:700;">D5R 旅客接駁區</div>
+          <div style="font-size:10px;color:#64748b;margin-top:4px;">第二航廈 D5R 候機室前</div>
+        </div>
+       </div>`,
+  p3: `<div class="q-image-inner" style="flex-direction:column;gap:8px;">
+        <div style="position:relative;width:160px;height:80px;background:#1e293b;border:2px solid #475569;border-radius:4px;">
+          <div style="position:absolute;top:6px;left:6px;background:#f59e0b;color:#000;font-size:10px;font-weight:700;padding:2px 6px;font-family:monospace;">EH1 ↓</div>
+          <div style="position:absolute;bottom:10px;left:20px;width:50px;height:20px;background:rgba(249,115,22,0.3);border:2px solid #f97316;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#f97316;">拖機</div>
+          <div style="position:absolute;top:50%;right:10px;transform:translateY(-50%);font-size:10px;color:#22c55e;">← 車輛</div>
+        </div>
+        <div style="font-size:10px;color:#64748b;">拖機已通過EH1</div>
+       </div>`,
+  p4: `<div class="q-image-inner" style="flex-direction:column;gap:8px;">
+        <div style="position:relative;width:160px;height:80px;background:#1e293b;border:2px solid #475569;border-radius:4px;">
+          <div style="position:absolute;top:6px;left:6px;background:#f59e0b;color:#000;font-size:10px;font-weight:700;padding:2px 6px;font-family:monospace;">EH1 ↓</div>
+          <div style="position:absolute;top:50%;left:10px;width:50px;height:20px;background:rgba(249,115,22,0.3);border:2px solid #f97316;border-radius:2px;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;font-size:9px;color:#f97316;">拖機</div>
+          <div style="position:absolute;top:50%;right:10px;transform:translateY(-50%);font-size:10px;color:#22c55e;">← 車輛</div>
+        </div>
+        <div style="font-size:10px;color:#64748b;">拖機尚未通過EH1</div>
+       </div>`,
+  p5: `<div class="q-image-inner"><div class="sign-stop"><span style="font-size:16px;">停</span><span style="font-size:10px;">注意飛機</span></div></div>`,
+  p6: `<div class="q-image-inner"><div class="sign-stop" style="background:#f59e0b;color:#000;border-color:#000;"><span style="font-size:10px;">未經塔台</span><span style="font-size:10px;">許可不得</span><span style="font-size:10px;">穿越</span></div></div>`,
+  p7: `<div class="q-image-inner"><div class="sign-stop" style="background:#dc2626;border-color:#fff;"><span style="font-size:18px;">停</span></div></div>`,
+  p8: `<div class="q-image-inner"><div class="sign-slow" style="width:64px;height:64px;"><span style="font-size:18px;">慢</span></div></div>`,
+  p9: `<div class="q-image-inner"><div style="width:100px;height:30px;background:#94a3b8;border-radius:3px;"></div></div>`,
+  p10:`<div class="q-image-inner"><div class="mark-black-white"></div></div>`,
+  p11:`<div class="q-image-inner">
+        <div style="width:100px;height:70px;position:relative;background:#1e293b;">
+          <div style="position:absolute;left:10px;top:0;bottom:0;width:3px;background:#dc2626;"></div>
+          <div style="position:absolute;right:10px;top:0;bottom:0;width:3px;background:#dc2626;"></div>
+          <div style="position:absolute;bottom:5px;left:20px;right:20px;height:3px;background:#dc2626;"></div>
+          <div style="position:absolute;bottom:8px;left:40px;font-size:10px;color:#fff;font-family:monospace;">→</div>
+        </div>
+       </div>`,
+  p12:`<div class="q-image-inner"><div class="mark-red-hatch"></div></div>`,
+  p13:`<div class="q-image-inner"><div class="mark-yellow-hatch"></div></div>`,
+  p14:`<div class="q-image-inner"><div class="mark-grey-hatch"></div></div>`,
+  p15:`<div class="q-image-inner"><div class="mark-yellow-hatch" style="width:60px;height:40px;border-color:#f59e0b;"></div></div>`,
+  p16:`<div class="q-image-inner">
+        <div style="width:120px;height:50px;background:repeating-linear-gradient(45deg,#f59e0b,#f59e0b 6px,transparent 6px,transparent 12px);border:2px solid #f59e0b;display:flex;align-items:center;justify-content:center;">
+          <span style="background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:2px 6px;">交管車輛專用</span>
+        </div>
+       </div>`,
+  p17:`<div class="q-image-inner">
+        <div style="width:140px;height:30px;border:2px solid #3b82f6;background:rgba(59,130,246,0.1);display:flex;align-items:center;justify-content:center;gap:4px;">
+          <span style="font-size:10px;color:#60a5fa;font-family:monospace;">🚌 🚌 🚌 🚌 🚌</span>
+        </div>
+       </div>`,
+  p18:`<div class="q-image-inner">
+        <div style="background:#1e293b;border:2px solid #475569;padding:8px 14px;border-radius:4px;text-align:center;">
+          <div style="font-family:monospace;font-size:14px;font-weight:700;color:#fff;">Z39</div>
+          <div style="font-family:monospace;font-size:14px;font-weight:700;color:#fff;">632</div>
+          <div style="height:3px;background:#f59e0b;margin-top:4px;"></div>
+        </div>
+       </div>`,
+  p19:`<div class="q-image-inner">
+        <div style="position:relative;width:140px;height:90px;background:#1e293b;border:2px solid #475569;border-radius:4px;font-size:9px;color:#94a3b8;">
+          <div style="position:absolute;top:15px;left:30px;width:80px;height:40px;background:rgba(30,41,59,0.8);border:1px solid #475569;"></div>
+          <div style="position:absolute;top:20px;left:35px;width:70px;height:30px;background:rgba(59,130,246,0.2);border:2px dashed #3b82f6;"></div>
+          <div style="position:absolute;top:16px;left:34px;width:16px;height:16px;border-radius:50%;border:2px solid #22c55e;background:transparent;"></div>
+          <div style="position:absolute;top:16px;right:20px;width:16px;height:16px;border-radius:50%;border:2px solid #22c55e;background:transparent;"></div>
+          <div style="position:absolute;bottom:12px;left:52px;width:16px;height:16px;background:none;border:2px solid #ef4444;"></div>
+          <div style="position:absolute;top:2px;left:2px;font-size:8px;color:#22c55e;">○</div>
+          <div style="position:absolute;top:2px;right:2px;font-size:8px;color:#22c55e;">○</div>
+          <div style="position:absolute;bottom:14px;left:54px;font-size:8px;color:#ef4444;">□</div>
+          <div style="position:absolute;top:28px;left:54px;font-size:8px;color:#f59e0b;">△</div>
+        </div>
+       </div>`,
+  p20:`<div class="q-image-inner">
+        <div style="position:relative;width:140px;height:90px;background:#1e293b;border:2px solid #475569;border-radius:4px;">
+          <div style="position:absolute;top:15px;left:30px;width:80px;height:40px;background:rgba(30,41,59,0.8);border:1px solid #475569;"></div>
+          <div style="position:absolute;top:20px;left:35px;width:70px;height:30px;background:rgba(59,130,246,0.2);border:2px dashed #3b82f6;"></div>
+          <div style="position:absolute;top:16px;left:34px;width:16px;height:16px;border-radius:50%;border:2px solid #22c55e;"></div>
+          <div style="position:absolute;top:16px;right:20px;width:16px;height:16px;border-radius:50%;border:2px solid #22c55e;"></div>
+          <div style="position:absolute;bottom:12px;left:52px;width:16px;height:16px;border:2px solid #ef4444;"></div>
+          <div style="position:absolute;top:2px;left:2px;font-size:8px;color:#22c55e;">○</div>
+          <div style="position:absolute;top:2px;right:2px;font-size:8px;color:#22c55e;">○</div>
+          <div style="position:absolute;bottom:14px;left:54px;font-size:8px;color:#ef4444;">□</div>
+          <div style="position:absolute;top:28px;left:54px;font-size:8px;color:#f59e0b;">△</div>
+        </div>
+       </div>`,
+  p21:`<div class="q-image-inner">
+        <div style="position:relative;width:140px;height:90px;background:#1e293b;border:2px solid #475569;border-radius:4px;">
+          <div style="position:absolute;top:15px;left:30px;width:80px;height:40px;background:rgba(30,41,59,0.8);border:1px solid #475569;"></div>
+          <div style="position:absolute;top:20px;left:35px;width:70px;height:30px;background:rgba(59,130,246,0.2);border:2px dashed #3b82f6;"></div>
+          <div style="position:absolute;top:16px;left:34px;width:16px;height:16px;border-radius:50%;border:2px solid #22c55e;"></div>
+          <div style="position:absolute;top:16px;right:20px;width:16px;height:16px;border-radius:50%;border:2px solid #22c55e;"></div>
+          <div style="position:absolute;bottom:12px;left:52px;width:16px;height:16px;border:2px solid #ef4444;"></div>
+          <div style="position:absolute;top:2px;left:2px;font-size:8px;color:#22c55e;">○</div>
+          <div style="position:absolute;top:2px;right:2px;font-size:8px;color:#22c55e;">○</div>
+          <div style="position:absolute;bottom:14px;left:54px;font-size:8px;color:#ef4444;">□</div>
+          <div style="position:absolute;top:28px;left:54px;font-size:8px;color:#f59e0b;">△</div>
+        </div>
+       </div>`,
+  p22:`<div class="q-image-inner"><div class="mark-yellow-hatch" style="width:80px;height:50px;position:relative;display:flex;align-items:center;justify-content:center;"><span style="background:rgba(0,0,0,.7);color:#fff;font-size:9px;padding:1px 4px;">停機坪區</span></div></div>`,
+};
+
+const QUESTIONS = [
+  // === 單選題 85題 ===
+  {id:1,type:'single',q:'何者為在陸上機場供航空器上下旅客、裝卸郵件或貨物、加油、停機或維修等目的而劃設之區域?',opts:['停機坪','活動區','操作區','勤務道路'],ans:0,kw:'空側區域'},
+  {id:2,type:'single',q:'桃園國際機場公司何單位負責車輛通行證核發、車輛裝備駕駛許可核發、行車管理、違規取締及「桃園國際機場空側駕駛資格許可作業程序」之修訂?',opts:['航務處','維護處','工程處','營運控制中心'],ans:0,kw:'作業程序'},
+  {id:3,type:'single',q:'下列何者非屬管制區域?',opts:['出境大廳','行李處理場','勤務道','停機坪'],ans:0,kw:'空側區域'},
+  {id:4,type:'single',q:'空側活動區車輛通行證類別以下何種不涵蓋在內?',opts:['工作通行證','車輛通行證','施工車輛通行證','臨時車輛通行證'],ans:0,kw:'車輛通行證'},
+  {id:5,type:'single',q:'當發布雷(暴)雨當空時，為維護停機坪工作人員安全，除航機操作狀況依航管指示繼續完成作業；何項作業須立即停止?',opts:['滾帶車裝載旅客行李','航機由滑行道進入停位並靠橋進行旅客下機作業','航機作業完畢由停機位後推至滑行道開車','航機作業完畢進行拖車作業'],ans:0,kw:'雷暴(雨)警告'},
+  {id:6,type:'single',q:'當發布何種警示時，為維護停機坪工作人員安全，除航機操作狀況之例外，且航空公司已依作業程序確認地面作業人員完成適當防護措施，並經航管指示者，可繼續完成作業；其餘停機坪作業應停止?',opts:['雷(暴)雨當空','雷(暴)雨接近','大風警報','大雨特報'],ans:0,kw:'雷暴(雨)警告'},
+  {id:7,type:'single',q:'桃園國際機場公司何單位依桃園空氣象臺提供之有關雷(暴)雨資料發布雷(暴)雨接近報與雷(暴)雨當空二項資訊?',opts:['航務處','營運安全處','工程處','業務處'],ans:0,kw:'雷暴(雨)警告'},
+  {id:8,type:'single',q:'「雷暴(雨)接近」係指距離機場指定參考點3公里(不含)以上至8公里範圍內，存在雷暴或是雷雨，此時設置停機坪雷擊預警燈號將顯示?',opts:['雷擊預警文字並閃爍警示燈號，但不會發出告警音','雷擊預警文字並閃爍警示燈號，同時喇叭發出告警音','僅閃爍燈號','僅顯示預警文字'],ans:0,kw:'雷暴(雨)警告'},
+  {id:9,type:'single',q:'「雷暴(雨)當空」係指距離機場指定參考點3公里範圍內，存在雷暴或是雷雨，此時設置停機坪雷擊預警燈號將顯示?',opts:['雷擊預警文字，並閃爍警示燈號，同時喇叭發出告警音','雷擊預警文字並閃爍警示燈號，但不會發出告警音','僅閃爍燈號','僅顯示預警文字'],ans:0,kw:'雷暴(雨)警告'},
+  {id:10,type:'single',q:'當啟動何種警示時，停機坪地面作業是否停止，由航空公司與地面作業單位自行協調決定?',opts:['雷(暴)雨接近','雷(暴)雨當空','大風警報','大雨特報'],ans:0,kw:'雷暴(雨)警告'},
+  {id:11,type:'single',q:'當啟動何種警示時，航空公司與地面作業單位應通知停機坪工作人員停止地面作業，直至該警示解除為止?',opts:['雷(暴)雨當空','雷(暴)雨接近','大風警報','大雨特報'],ans:0,kw:'雷暴(雨)警告'},
+  {id:12,type:'single',q:'航機自滑行道進坪時，當車道管制員舉起交通指揮棒，交通道上所有車輛駕駛應立即採取之動作為何?',opts:['停止行進','快速前進','慢速通過','繼續行駛'],ans:0,kw:'車道管制員'},
+  {id:13,type:'single',q:'何者非在陸上機場供航空器上下旅客、裝卸郵件或貨物、加油、停機或維修等目的而劃設之區域?',opts:['滑行道','停機坪','C9停機位','D4停機位'],ans:0,kw:'空側區域'},
+  {id:14,type:'single',q:'機場內供航空器起飛、降落及滑行之區域，包括操作區及停機坪是?',opts:['活動區','跑道','維修機坪','滑行道'],ans:0,kw:'空側區域'},
+  {id:15,type:'single',q:'車輛機具穿越滑行道時，下列敘述何者正確?',opts:['選項皆是','應加強注意航空器動態及地面指揮','應於交通道停車標誌處暫停','應讓航空器優先滑行，嚴禁搶道穿越'],ans:0,kw:'滑行道'},
+  {id:16,type:'single',q:'航空器於有外交通道機坪後推時，航空公司或地勤公司應派何者在停機坪後方及危險區域管制人車通行以維護安全?',opts:['車道管制員','航機引導員','機務員','運務員'],ans:0,kw:'車道管制員'},
+  {id:17,type:'single',q:'人員在活動區內操作油罐車，應持有航務處核發之何者？',opts:['駕駛許可','施工證','臨時通行證','操作學習證'],ans:0,kw:'駕駛許可'},
+  {id:18,type:'single',q:'航機滑行進入停機坪之導引作業由何單位負責?',opts:['地勤公司','航務處','航空公司','塔臺'],ans:0,kw:'作業程序'},
+  {id:19,type:'single',q:'作業車輛及裝備車道於A、B停機坪應行駛何種車道?',opts:['外交通道','內交通道','滑行道','勤務道路'],ans:0,kw:'交通道'},
+  {id:20,type:'single',q:'A、B停機坪空橋下方車道嚴禁任何車輛、裝備通行，以下何者車輛除外?',opts:['選項皆是','該停機坪作業所必須裝備','緊急狀況處理車輛','執行公務車輛'],ans:0,kw:'交通道'},
+  {id:21,type:'single',q:'當航空器進坪或準備後推時，何區域內除為導引航空器活動之車輛及人員外，禁止其他人員、車輛及裝備停留於該區域內?',opts:['停機坪安全線(紅線)','裝備停放區','作業車輛停車格'],ans:0,kw:'停機安全線'},
+  {id:22,type:'single',q:'各作業車輛行駛時應禮讓之車輛，何者為非?',opts:['餐車','航空器','旅客接駁車','消防車'],ans:0,kw:'行車安全'},
+  {id:23,type:'single',q:'各作業車輛於空側區域作業時，遇航空器及旅客接駁車輛時，何者為非?',opts:['強行通過','優先通行','嚴禁超速','保持安全距離'],ans:0,kw:'行車安全'},
+  {id:24,type:'single',q:'各作業車輛進出停機坪須遵循下列何者？',opts:['選項皆是','劃設之標線','行進方向箭頭標示','車道管制員之管制'],ans:0,kw:'行車安全'},
+  {id:25,type:'single',q:'航空器到達停機位置且放置輪檔關車後，各項地面裝備車輛始可靠機執行作業，待裝卸之行李或貨物應放置於何區域?',opts:['裝備停放區','停機位淨空紅線','作業車輛停車格','空橋下方'],ans:0,kw:'裝備停放'},
+  {id:26,type:'single',q:'在停機坪進行維修作業，應向何單位申請維修時段，核可後，方可進行，且不得污染地面作業完畢後，應立即清除所有FOD，並通報該單位？',opts:['航務處','地勤公司','營運安全處','工程處'],ans:0,kw:'作業程序'},
+  {id:27,type:'single',q:'所有人員進入操作區及活動區時應穿著？',opts:['反光背心','安全帽','外套','太陽眼鏡'],ans:0,kw:'反光背心'},
+  {id:28,type:'single',q:'任何車輛、裝備，非經授權許可是否可以穿越機翼、機腹下方?',opts:['不可以','可以','無規定','視情況'],ans:0,kw:'行車安全'},
+  {id:29,type:'single',q:'桃園機場發布「雷(暴)雨當空」時，所有地面作業應採取何種處置？',opts:['停止','繼續','視情況','無規定'],ans:0,kw:'雷暴(雨)警告'},
+  {id:30,type:'single',q:'若停機位與內交通車道間劃有何區段，除航機拖車外，所有車輛禁止由此進出?',opts:['紅色禁止穿越標線區段','裝備停放區','作業車輛停車格','勤務道'],ans:0,kw:'停機安全線'},
+  {id:31,type:'single',q:'若停機位與內交通車道間劃有紅色禁止穿越標線區段，除何種作業車輛外，所有車輛禁止由此進出？',opts:['航機拖車','油罐車','滾帶車','加水車'],ans:0,kw:'停機安全線'},
+  {id:32,type:'single',q:'車輛、裝備、貨物與器材應整齊排列於何區域內，並保持該區域之整潔？',opts:['裝備停放區','紅色禁止穿越標線區段','交通道','勤務道'],ans:0,kw:'裝備停放'},
+  {id:33,type:'single',q:'進入操作區之拖車須於呼叫塔臺前開啟何種裝備，脫離操作區後關閉之？',opts:['車載ADS-B裝備','音響','收音機','冷氣'],ans:0,kw:'ADS-B'},
+  {id:34,type:'single',q:'若發生空側安全及異常事件，應立即通報機場公司何單位前往處理?',opts:['航務處','地勤公司','營運安全處','工程處'],ans:0,kw:'通報'},
+  {id:35,type:'single',q:'於活動區內若有發生任何飛安意外事件及發現緊急或異常事件，應立即通報機場公司航務處前往處理，不可隱匿不報或私下和解，若因而產生嚴重後果者除加重處罰外，所產生一切損失均由違規人員或單位負何種責任？',opts:['完全責任','部分責任','沒有責任','視情況'],ans:0,kw:'通報'},
+  {id:36,type:'single',q:'於活動區內若有發生任何飛安意外事件及發現緊急或異常事件，應作何種處置？',opts:['立即通報航務處','隱匿不報','私下和解','視情況'],ans:0,kw:'通報'},
+  {id:37,type:'single',q:'勤務道路標線之顏色為何？',opts:['白色','黃色','紅色','綠色'],ans:0,kw:'勤務道'},
+  {id:38,type:'single',q:'以下安全注意事項之敘述，何者為非?',opts:['於空側活動區行駛車輛應全天候開啟閃光警示燈，大燈得僅於晚上開啟即可','車輛與裝備停放時應拉妥手煞車並以輪檔或使用液壓支架固定','任何車輛、裝備行駛或停放時不得壓過地面油栓蓋板','航空器於停機坪關車並安置輪檔後，須待耳機員哨音或手勢，各地面裝備車輛始可接近該航空器作業'],ans:0,kw:'裝備停放'},
+  {id:39,type:'single',q:'桃園國際機場第一航廈南停機坪之英文字母編號為何？',opts:['B','A','C','D'],ans:0,kw:'停機坪'},
+  {id:40,type:'single',q:'桃園國際機場第一航廈北停機坪之英文字母編號為何？',opts:['A','B','C','D'],ans:0,kw:'停機坪'},
+  {id:41,type:'single',q:'桃園國際機場第二航廈南停機坪之英文字母編號為何？',opts:['C','A','B','D'],ans:0,kw:'停機坪'},
+  {id:42,type:'single',q:'桃園國際機場第二航廈北停機坪之英文字母編號為何？',opts:['D','A','B','C'],ans:0,kw:'停機坪'},
+  {id:43,type:'single',q:'何者不屬於空側活動區車輛通行證類別？',opts:['工作通行證','車輛通行證','施工車輛通行證','臨時車輛通行證'],ans:0,kw:'車輛通行證'},
+  {id:44,type:'single',q:'申請駕駛許可檢定每次最多可申請檢定幾項？',opts:['1項','2項','3項','4項'],ans:0,kw:'駕駛許可'},
+  {id:45,type:'single',q:'所有施工車輛駕駛，須具備之項目何者為非？',opts:['具備陸側工作許可證','具備空側駕駛許可','熟悉施工交通動線','遵守停機坪作業與管理規定'],ans:0,kw:'作業程序'},
+  {id:46,type:'single',q:'不具備空側駕駛許可人員所駕駛之車輛，必須由具有何種資格之人員帶領？',opts:['空側駕駛許可','陸側工作許可證','普通駕照','身分證'],ans:0,kw:'駕駛許可'},
+  {id:47,type:'single',q:'於停機坪內施工之車輛與人員應接受何單位之管制？',opts:['航務處','塔臺','維護處','工程處'],ans:0,kw:'作業程序'},
+  {id:48,type:'single',q:'一般勤務車輛閃光警示燈顏色為何？',opts:['黃色','紅色','藍色','白色'],ans:0,kw:'警示燈'},
+  {id:49,type:'single',q:'消防及救護車輛閃光警示燈顏色為何？',opts:['紅色','黃色','藍色','白色'],ans:0,kw:'警示燈'},
+  {id:50,type:'single',q:'緊急及保安車輛閃光警示燈顏色為何？',opts:['藍色','黃色','紅色','白色'],ans:0,kw:'警示燈'},
+  {id:51,type:'single',q:'穿越滑行道時，當滑行道上已有航機滑行，哪些車輛可以通行？',opts:['所有車輛均應停等','旅客接駁車','飛航組員接駁車','航務處黃車'],ans:0,kw:'滑行道'},
+  {id:52,type:'single',q:'車輛行駛於東勤務道，欲前往華航廠區；同時有一架航機在Q(Q5-E之間)上滑行，此時車輛應：',opts:['原地停等','繼續前進','原地打轉','下車指揮交通'],ans:0,kw:'滑行道'},
+  {id:53,type:'single',q:'車輛行駛於東勤務道，欲前往華航廠區；同時有一架航機在Q(Q5-E之間)上滑行，此時航機停止滑行，鼻輪大燈關閉，車輛應：',opts:['原地停等','繼續前進','原地打轉','下車指揮交通'],ans:0,kw:'滑行道'},
+  {id:54,type:'single',q:'車輛行駛於東勤務道，欲前往華航廠區；同時有一架航機在Q(Q5-E之間)上滑行，此時航機停止滑行，鼻輪大燈關閉，航務處黃車已在滑行道上指揮交通並示意車輛通行，車輛應：',opts:['可以開始通過','原地停等','原地打轉','下車協助航務員指揮交通'],ans:0,kw:'滑行道'},
+  {id:55,type:'single',q:'車輛行駛於東勤務道，欲前往華航廠區；同時有一架航機在Q(Q5-E之間)上滑行，此時航機停止滑行，鼻輪大燈關閉，航務處黃車已在滑行道上指揮交通並示意車輛通行，但您的車輛到滑行道前欲通行時，卻看見黃車已經駛離滑行道，後方車輛應：',opts:['原地停等','繼續前進','立刻跟上黃車通行','下車指揮交通'],ans:0,kw:'滑行道'},
+  {id:56,type:'single',q:'車輛行駛於東勤務道，欲前往華航廠區；同時有一架航機在Q(Q5-E之間)上滑行，此時航機停止滑行，鼻輪大燈關閉，停等車輛遲遲未見航務處黃車出現，滑行道上的航機也遲遲未滑行，且鼻輪大燈持續關閉不亮，車輛應：',opts:['原地停等','繼續前進','原地打轉','下車指揮交通'],ans:0,kw:'滑行道'},
+  {id:57,type:'single',q:'車輛欲從內交通道至外交通道，下列作法何者正確？',opts:['進出、穿越停機坪須依照所劃設之交通道或行進方向箭頭標線行進','沿著機坪邊緣任意方向穿越','沿著停機位中心線穿越機坪至外交通道','從機身下方穿越至外交通道'],ans:0,kw:'交通道'},
+  {id:58,type:'single',q:'車輛欲從外交通道至內交通道，下列作法何者正確？',opts:['進出、穿越停機坪須依照所劃設之交通道或行進方向箭頭標線行進','沿著機坪邊緣任意方向穿越','沿著停機位中心線穿越機坪至內交通道','從機身下方穿越至內交通道'],ans:0,kw:'交通道'},
+  {id:59,type:'single',q:'各型車輛機具位作業時，應排放整齊停於？',opts:['裝備區或經指定之停放區','紅色機翼間距淨空線內','環場道上','管制區外的停車場'],ans:0,kw:'裝備停放'},
+  {id:60,type:'single',q:'場內施工車輛駕駛人未具有場內駕駛許可，應通知？',opts:['工程主辦單位派員按規定引導通行','營運安全處','航警','海關'],ans:0,kw:'駕駛許可'},
+  {id:61,type:'single',q:'航空器停妥後，各地面裝備車輛接近航空器作業何者正確？',opts:['航機關車並安置輪檔後，須待耳機員哨音或手勢，各地面裝備車輛始可接近該航機作業','自行判斷','航機靜止不動後','航機完全進入停機坪後'],ans:0,kw:'靠機作業'},
+  {id:62,type:'single',q:'車輛穿越滑行道時，遇到何者通過時應禮讓，並保持安全距離後，始可穿越？',opts:['選項皆是','巡檢車輛','航空器','航機拖車'],ans:0,kw:'滑行道'},
+  {id:63,type:'single',q:'有關北交通道車輛穿越E滑行道之通行標準，下列何者為非？',opts:['選項皆正確','E滑行道上往北的拖機未抵達EH1或停等於EH1前，均可通行。','北側拖機只要尚未轉向E滑行道方向前，均可通行。','適用地點為北交通道與E滑行道交口，且僅適用於滑行道上的航情為拖機之狀況。'],ans:0,kw:'穿越滑行道'},
+  {id:64,type:'single',q:'有關客機坪及501-515貨機坪外交通道與裝備停放區間之白斜線格，下列何者正確？',opts:['裝備區白斜線格限空盤車停放','裝備區白斜線格任何車輛均可停放','裝備區白斜線格限該機坪作業車輛停放','裝備區白斜線格限貨盤停放'],ans:0,kw:'裝備停放'},
+  {id:65,type:'single',q:'有關車道管制員手勢，下列何者為非？',opts:['管制和快速通過手勢可以同時出現。','表示車輛快速通過時，交通指揮棒位置不超過胸線。','進行車道管制時，上手交通指揮棒高舉過頭，下手自然垂下。','管制和快速通過手勢不可同時出現，避免車輛駕駛混淆。'],ans:0,kw:'車道管制'},
+  {id:66,type:'single',q:'有關內交通道通行規定，下列何者正確？',opts:['航機進坪時可以通行','航機進坪時不可通行','車道上有擺放三角錐時可以通行','選項皆非'],ans:0,kw:'交通道'},
+  {id:67,type:'single',q:'有關貨機坪車道標線，下列何者為非？',opts:['車輛在車道上可以往任意方向行駛','機坪前方兩側畫設黑白相間標線','車道應保持淨空','車道上的白色箭頭為車行方向'],ans:0,kw:'標線標誌'},
+  {id:68,type:'single',q:'下列何項車輛或裝備可於「空橋已定位」且「航機安全錐擺放完成」之情形下，進入空橋作業區域？',opts:['接送機坪工作人員之必要車輛','依據各原廠機型作業規定，因加油作業與油栓口相對位置之關係需由空橋側進行加油','因加油作業與油栓口相對位置之關係需由空橋側進行加油','執行緊急傷病患作業之高空作業車輛'],ans:0,kw:'空橋作業區域'},
+  {id:69,type:'single',q:'車輛、裝備進出機坪時速限為何？',opts:['15公里/小時','25公里/小時','40公里/小時','無速限規定'],ans:0,kw:'速限'},
+  {id:70,type:'single',q:'駕駛車輛穿越滑行道時，若不慎闖越滑行中的航機時，應如何作為？',opts:['選項皆是','若車輛尚未通過滑行道中心線，可迴轉駛離滑行道','若車輛尚未通過滑行道中心線，且車輛迴轉有風險，可向前加速脫離','若車輛已通過滑行道中心線，可向前加速脫離'],ans:0,kw:'穿越滑行道'},
+  {id:71,type:'single',q:'Z區交通道速限為？',opts:['40公里/小時','25公里/小時','15公里/小時','無速限規定'],ans:0,kw:'速限'},
+  {id:72,type:'single',q:'空橋下方禁止停靠任何車輛，除了以下情況：',opts:['沒有例外，空橋下方一律禁止停放車輛','車輛因維修空橋而裝載工具','車輛因接送飛航組員','車輛因機務維修'],ans:0,kw:'空橋作業區域'},
+  {id:73,type:'single',q:'依據桃園國際機場公司114年2月11日安全委員會航務分組統計，下列何者為桃園機場空側發生車輛/裝備碰撞常見發生型態？',opts:['選項皆是','倒車不慎','未與前車保持安全車距','未確實注意周遭動態'],ans:0,kw:'碰撞'},
+  {id:74,type:'single',q:'下列何者為桃園機場空側車輛/裝備碰撞熱點？',opts:['選項皆是','停機坪外交通道','跨越滑行道交通道','機坪裝備停放區'],ans:0,kw:'碰撞'},
+  {id:75,type:'single',q:'車輛、裝備進出機坪時限速為何？',opts:['15公里/小時','25公里/小時','40公里/小時','無速限'],ans:0,kw:'速限'},
+  {id:76,type:'single',q:'下列何種狀況可以依照標線進出停機坪？',opts:['選項皆非','到場航機或拖機已進入機坪但尚未定位','車道管制員開始交通管制','選項皆是'],ans:0,kw:'闖越航機'},
+  {id:77,type:'single',q:'依據桃園機場公司113年9月27日安全委員會航務分組統計，下列何者非「闖越航機」的常見發生原因？（第77題）',opts:['未與車道管制員打招呼','未注意交管人員手勢','航機進坪或後推時進入停機坪安全線內','未確實於停等線前停等並確認'],ans:0,kw:'闖越航機'},
+  {id:78,type:'single',q:'依據桃園機場公司113年9月27日安全委員會航務分組統計，下列何者非「闖越航機」的常見發生原因？（第78題）',opts:['對航機機型不熟悉','未確認航機動態','侵入滑行道後推動線','未確實於停等線前停等並確認'],ans:0,kw:'闖越航機'},
+  {id:79,type:'single',q:'為避免於停機坪四周闖越航機，在行經或進出停機坪前，應注意：',opts:['選項皆是','三角錐是否已收','航機是否已掛拖車','是否有交管人員'],ans:0,kw:'闖越航機'},
+  {id:80,type:'single',q:'依據「外交通道車輛避讓後推航機原則」：當車輛行駛於外交通道時，如已通過尚未開始管制之交管人員，而前方(對向)交管人員開始管制，應該如何反應？',opts:['應依速限並與前車保持距離，向前通過該停機位後方','應緊急煞車，並倒車至已通過之交管人員位置','應依速限迴轉至已通過之交管人員位置','應緊急剎車，並立即轉向停機坪內避讓。'],ans:0,kw:'闖越航機'},
+  {id:81,type:'single',q:'符合桃園國際機場空側違規事件處理原則之「自願報告處置」條件何者為非？',opts:['所有違規項目都適用','應於7日內提出改善報告','桃園國際機場公司尚未通知前，主動陳述違規事實。','願意承擔相關損害賠償責任，並接受調查。'],ans:0,kw:'罰則'},
+  {id:82,type:'single',q:'依據桃園國際機場空側違規事件處理原則，空側駕駛在1080天內記違規點數累計達12點以上者，空側駕駛資格立即停權幾天？',opts:['14','7','30','60'],ans:0,kw:'罰則'},
+  {id:83,type:'single',q:'依據桃園國際機場空側違規事件處理原則，空側駕駛在1080天內，空側駕駛資格經停權達第幾次即予註銷？',opts:['3','2','1','4'],ans:0,kw:'罰則'},
+  {id:84,type:'single',q:'依據桃園國際機場空側違規事件處理原則，空側駕駛在1080天內，空側駕駛資格經停權達第3次會？',opts:['立即註銷','停權天數提高至90天','停權天數提高至60天','停權天數提高至30天'],ans:0,kw:'罰則'},
+  {id:85,type:'single',q:'駕駛人之駕駛資格因違規行為註銷後，自註銷日起起算多久後才可重新申請？',opts:['12個月','6個月','3個月','36個月'],ans:0,kw:'罰則'},
+
+  // === 是非題 197題 ===
+  {id:201,type:'tf',q:'操作區指機場內供航空器起飛、降落及滑行之區域，但不包括停機坪。',ans:true,kw:'空側區域'},
+  {id:202,type:'tf',q:'操作區指機場內供航空器起飛、降落及滑行之區域，包括停機坪。',ans:false,kw:'空側區域'},
+  {id:203,type:'tf',q:'活動區指機場內供航空器起飛、降落及滑行之區域，包括操作區及停機坪。',ans:true,kw:'空側區域'},
+  {id:204,type:'tf',q:'活動區指機場內供航空器起飛、降落及滑行之區域，但不包括停機坪。',ans:false,kw:'空側區域'},
+  {id:205,type:'tf',q:'空側活動區車輛通行證類別為車輛通行證、施工車輛通行證及臨時車輛通行證。',ans:true,kw:'車輛通行證'},
+  {id:206,type:'tf',q:'屆期、車輛轉移或報廢等車輛通行證應申請註銷並繳回桃園國際機場公司。',ans:true,kw:'車輛通行證'},
+  {id:207,type:'tf',q:'車輛通行證遺失時，領證使用單位應立即通報航空警察局勤務指揮中心及桃園國際機場公司航務處。',ans:true,kw:'車輛通行證'},
+  {id:208,type:'tf',q:'車輛須停放於指定作業區，不得任意停放，共同維護機場安全秩序。',ans:true,kw:'裝備停放'},
+  {id:209,type:'tf',q:'車輛行駛活動區時，務必確實開啟大燈及閃光警示燈。',ans:true,kw:'行車安全'},
+  {id:210,type:'tf',q:'桃園國際機場空側駕駛許可之管理單位為桃園機場公司航務處。',ans:true,kw:'駕駛許可'},
+  {id:211,type:'tf',q:'任何車輛、裝備行駛或停放時不得壓過地面油栓蓋板。',ans:true,kw:'裝備停放'},
+  {id:212,type:'tf',q:'拖掛平板車或貨盤車數可依拖車大小自行決定。',ans:false,kw:'行車安全'},
+  {id:213,type:'tf',q:'拖車所拖掛之貨盤車不得載人行駛。',ans:true,kw:'行車安全'},
+  {id:214,type:'tf',q:'地面裝備與車輛在停機坪應使用手煞車、液壓支架或輪檔固定後，再行作業或停放。',ans:true,kw:'裝備停放'},
+  {id:215,type:'tf',q:'非作業車輛及裝備可任意停放在無停車格區。',ans:false,kw:'裝備停放'},
+  {id:216,type:'tf',q:'貨機坪內交通道之速限為時速40公里。',ans:false,kw:'行車安全'},
+  {id:217,type:'tf',q:'行駛機坪外交通道上時，見車道管制員舉牌須立即停車。',ans:true,kw:'行車安全'},
+  {id:218,type:'tf',q:'穿越E滑行道時，應「停車」確認無航機滑行時，才可通行。',ans:true,kw:'行車安全'},
+  {id:219,type:'tf',q:'無線電通訊應清晰、簡潔，如獲指示必須覆誦以表達充分理解。',ans:true,kw:'行車安全'},
+  {id:220,type:'tf',q:'車輛行駛空側區域，如發現異狀應立即通知桃園機場公司航務處處理。',ans:true,kw:'通報'},
+  {id:221,type:'tf',q:'各單位申領車輛通行證之車輛應裝設黃色閃光警示燈、輪檔及在有效期限內之小型滅火器，車身兩側需貼有明顯該公司名稱標誌。',ans:true,kw:'車輛通行證'},
+  {id:222,type:'tf',q:'車輛通行證A類證可由本機場除行李處理場崗哨外各崗哨進出、通行跑道、滑行道、停機坪、交通道、勤務道、環場道及行李處理場。',ans:true,kw:'空側區域'},
+  {id:223,type:'tf',q:'各單位換領各類車輛通行證時，原領用之舊證一併繳回機場公司繳銷，否則新證不予發給。',ans:true,kw:'車輛通行證'},
+  {id:224,type:'tf',q:'車輛通行證之使用務須切實遵守各類車輛通行證使用原則，駕駛人須持有本場空側駕駛許可，並依本場活動區行車管制作業規定行駛，不得違規使用。',ans:true,kw:'車輛通行證'},
+  {id:225,type:'tf',q:'場內車輛通行證可進入跑道及滑行道的引導車(Follow-me)應領用車輛通行證A類證。',ans:true,kw:'車輛通行證'},
+  {id:226,type:'tf',q:'車輛或裝備行駛時，搭載人員數量不限且可攀立。',ans:false,kw:'行車安全'},
+  {id:227,type:'tf',q:'車輛裝備行駛時，應讓航空器優先通行，遇接駁車時則視情況而定。',ans:false,kw:'行車安全'},
+  {id:228,type:'tf',q:'各類車輛通行證不得越區、逾期、冒用或塗改使用，如違反而經查獲者，除即行收回該車輛通行證外，並依相關規定處理，另通知其所屬單位查明懲處。',ans:true,kw:'車輛通行證'},
+  {id:229,type:'tf',q:'車輛於低能見度穿越E及Q滑行道時，應遵守本場消防隊之管制。',ans:true,kw:'行車安全'},
+  {id:230,type:'tf',q:'貨盤車載運散裝貨盤時，堆放高度不得超過1.8公尺並覆蓋盤網防止貨盤脫落。',ans:true,kw:'行車安全'},
+  {id:231,type:'tf',q:'各作業車輛可以由任何角度進出機坪。',ans:false,kw:'行車安全'},
+  {id:232,type:'tf',q:'車輛轉彎或改道行駛時，應以方向燈或手勢表示。',ans:true,kw:'行車安全'},
+  {id:233,type:'tf',q:'車輛及裝備靠機作業時，不得妨礙加油車撤離之道路。',ans:true,kw:'行車安全'},
+  {id:234,type:'tf',q:'機場作業人員及車輛應讓航機優先通行，隨時注意航機進坪、後推及滑行安全，禁止由滑行中航空器前方強行通行，影響航機安全。',ans:true,kw:'行車安全'},
+  {id:235,type:'tf',q:'遠端接駁停機坪之編號為601-615。',ans:true,kw:'空側區域'},
+  {id:236,type:'tf',q:'場內施工車輛駕駛人未領有場內駕駛許可，應由請領單位派有與行駛區域相對應的空側駕駛資格的駕駛人陪同，方得於活動區行駛。',ans:true,kw:'駕駛許可'},
+  {id:237,type:'tf',q:'執行航空器拖機作業時，於停機坪上速度不得超過每小時5公里。',ans:true,kw:'行車安全'},
+  {id:238,type:'tf',q:'除空橋維修車輛外，空橋裝備周邊紅色區域，不得停放任何車輛。',ans:true,kw:'裝備停放'},
+  {id:239,type:'tf',q:'行車前應先行檢查車頂閃光警示燈是否正常。',ans:true,kw:'警示燈'},
+  {id:240,type:'tf',q:'機坪內未停放航機時，可利用空間暫時停放地面裝備及盤貨。',ans:false,kw:'停機安全線'},
+  {id:241,type:'tf',q:'車輛因作業需要可暫停於空橋下方之紅線區。',ans:false,kw:'裝備停放'},
+  {id:242,type:'tf',q:'所有須進入操作區之施工車輛及機具，無須裝設可與塔臺通聯之無線電。',ans:false,kw:'無線電'},
+  {id:243,type:'tf',q:'所有須進入操作區之施工車輛及機具，必須裝設可與塔臺通聯之無線電。',ans:true,kw:'無線電'},
+  {id:244,type:'tf',q:'須進入操作區之施工車輛如未裝設與塔臺通聯之無線電，必須尾隨其他裝設有無線電之車輛團進團出。',ans:true,kw:'無線電'},
+  {id:245,type:'tf',q:'須進入操作區之施工車輛如未裝設與塔臺通聯之無線電，無須跟隨其他裝設有無線電之車輛團進團出。',ans:false,kw:'空側區域'},
+  {id:246,type:'tf',q:'操作區指機場內供航空器起飛、降落及滑行之區域，且包括停機坪。',ans:false,kw:'空側區域'},
+  {id:247,type:'tf',q:'行駛機坪外交通道，車速不得超過每小時40公里。',ans:true,kw:'速限'},
+  {id:248,type:'tf',q:'桃園機場發佈「雷(暴)雨當空」時，仍可視當時狀況自行決定是否繼續執行地面作業。',ans:false,kw:'雷(暴)雨當空'},
+  {id:249,type:'tf',q:'各作業車輛應讓航空器及接駁車優先通行並嚴禁超速。',ans:true,kw:'通行權'},
+  {id:250,type:'tf',q:'行駛空側活動區行駛車輛應全天候開啟閃光警示燈，大燈可僅於夜晚開啟即可。',ans:false,kw:'車燈'},
+  {id:251,type:'tf',q:'拖車後方最多拖掛6輛平板車或貨盤車。',ans:false,kw:'拖車'},
+  {id:252,type:'tf',q:'陸側為泛指機場內供航空器起飛、降落及地面活動之區域。',ans:false,kw:'空側區域'},
+  {id:253,type:'tf',q:'車輛穿越E滑行道時，應停、看確定無航空器拖(滑)行時，始可通過。',ans:true,kw:'穿越滑行道'},
+  {id:254,type:'tf',q:'A類車輛通行證可由所有桃園機場崗哨進出，通行範圍為跑道、滑行道、停機坪、交通道、勤務道、環場道、行李處理場。',ans:false,kw:'空側區域'},
+  {id:255,type:'tf',q:'拖車行駛時，其所拖掛之貨板車或貨櫃內在下雨天時可以載人。',ans:false,kw:'拖車'},
+  {id:256,type:'tf',q:'雷(暴)雨當空時，停機坪作業是否停止，由航空公司與地面作業單位自行協調決定。',ans:false,kw:'雷(暴)雨當空'},
+  {id:257,type:'tf',q:'需駛入操作區之車輛須於呼叫塔臺前開啟車載ADS-B裝備，脫離操作區後關閉之。',ans:true,kw:'ADS-B'},
+  {id:258,type:'tf',q:'在交通道行駛穿越滑行道時，遇見拖機作業，若無人管制就不必在停等標線前確實停等。',ans:false,kw:'標線'},
+  {id:259,type:'tf',q:'行駛航廈地下室行李處理場之下坡路段，拖車頭車速不得超過每小時15公里；設有速限標示處應依其速限行駛。',ans:true,kw:'速限'},
+  {id:260,type:'tf',q:'航空器關車並安置輪檔後，無須待耳機員哨音或手勢，各地面裝備車輛便可接近該航空器作業。',ans:false,kw:'靠機'},
+  {id:261,type:'tf',q:'各作業車輛進出停機坪須依照所劃設之標線及行進方向箭頭標示行進。',ans:true,kw:'行進方向'},
+  {id:262,type:'tf',q:'行C、D停機坪內交通道，車速不得超過每小時25公里，如在作業繁忙時應視狀況減速慢行。',ans:true,kw:'速限'},
+  {id:263,type:'tf',q:'活動區是指機場內供航空器起飛、降落及滑行之區域，但不包括操作區及停機坪。',ans:false,kw:'空側區域'},
+  {id:264,type:'tf',q:'車輛通行證應於屆期或契約結束，工程施工完畢時，由業管單位負責將車輛通行證收回，送繳桃園機場公司航務處註銷。',ans:true,kw:'車輛通行證'},
+  {id:265,type:'tf',q:'車輛裝備可穿越機翼或機腹下方。',ans:false,kw:'機翼淨空線'},
+  {id:266,type:'tf',q:'航空器離場後各單位之地面裝備、車輛、貨物無須停放於規劃之裝備停放區。',ans:false,kw:'裝備停放區'},
+  {id:267,type:'tf',q:'執行拖機作業時；拖機速度於機坪上速限為每小時15公里。',ans:false,kw:'速限'},
+  {id:268,type:'tf',q:'作業人員執行拖機作業時；拖桿式拖車拖機速度於滑行道上不得超過每小時15公里。',ans:true,kw:'速限'},
+  {id:269,type:'tf',q:'作業人員執行拖機作業時；無拖桿式拖車拖機速度於滑行道上不得超過每小時20公里。',ans:true,kw:'速限'},
+  {id:270,type:'tf',q:'A類加上C2車輛通行證可由所有桃園機場崗哨進出，通行範圍為跑道、滑行道、停機坪、交通道、勤務道、環場道、地下行李室處理場。',ans:true,kw:'空側區域'},
+  {id:271,type:'tf',q:'停機坪為在陸上機場供航空器上下旅客、裝卸郵件或貨物、加油、停機或維修等目的而劃設之區域。',ans:true,kw:'空側區域'},
+  {id:272,type:'tf',q:'操作區指機場內供航空器起飛、降落及滑行之區域，但不包括停機坪。（第72題）',ans:true,kw:'空側區域'},
+  {id:273,type:'tf',q:'行駛空側活動區行駛車輛應全天候開啟閃光警示燈及大燈，同時應開啟遠光燈。',ans:false,kw:'車燈'},
+  {id:274,type:'tf',q:'行駛空側活動區行駛車輛應全天候開啟閃光警示燈及大燈。',ans:true,kw:'車燈'},
+  {id:275,type:'tf',q:'拖車所拖掛之貨板車上得載人行駛。',ans:false,kw:'拖車'},
+  {id:276,type:'tf',q:'空側區域發生車禍或意外事故應立即通知桃園機場公司航務處。',ans:true,kw:'車禍、意外事故'},
+  {id:277,type:'tf',q:'行駛航廈行李處理場，車速不得超過每小時20公里，其上坡路段，車速則不得超過每小時40里。',ans:true,kw:'速限'},
+  {id:278,type:'tf',q:'空側為機場內供航機使用之區域或與該區域鄰接之區域。',ans:true,kw:'空側區域'},
+  {id:279,type:'tf',q:'停機坪安全線、禁止穿越線、空橋作業區域標線之顏色為紅色。',ans:true,kw:'標線'},
+  {id:280,type:'tf',q:'停機坪安全線、禁止穿越線、空橋作業區域標線之顏色為黃色。',ans:false,kw:'標線'},
+  {id:281,type:'tf',q:'在夜晚或低能見度無法確定自己車輛位置時，為避免影響場面作業，應自行找路。',ans:false,kw:'低能見度'},
+  {id:282,type:'tf',q:'在夜晚或低能見度無法確定自己車輛位置時，切勿自行找路，應停止移動，並立即通報桃園機場公司航務處。',ans:true,kw:'低能見度'},
+  {id:283,type:'tf',q:'進入操作區之車輛應具有A類車輛通行證。',ans:true,kw:'車輛通行證'},
+  {id:284,type:'tf',q:'進入操作區之車輛應具有B類車輛通行證。',ans:false,kw:'車輛通行證'},
+  {id:285,type:'tf',q:'施工車輛應保持整潔並覆蓋帆布，行經路徑不得有飄飛物、FOD、汙泥漿等其他汙染鋪面而造成飛安事故之情形。',ans:true,kw:'FOD'},
+  {id:286,type:'tf',q:'進入空側施工區域，不分晝夜皆須穿著反光背心。',ans:true,kw:'反光背心'},
+  {id:287,type:'tf',q:'一般勤務車輛閃光警示燈顏色為黃色。',ans:true,kw:'車燈'},
+  {id:288,type:'tf',q:'消防及救護車輛閃光警示燈顏色為紅色。',ans:true,kw:'車燈'},
+  {id:289,type:'tf',q:'緊急及保安車輛閃光警示燈顏色為藍色。',ans:true,kw:'車燈'},
+  {id:290,type:'tf',q:'閃光警示燈應裝置於車頂或明顯處。',ans:true,kw:'車燈'},
+  {id:291,type:'tf',q:'進出、穿越停機坪須依照所劃設之交通道或行進方向箭頭標線行進。',ans:true,kw:'機坪進出'},
+  {id:292,type:'tf',q:'停機坪及滑行道上不得兩車並行駛或搶道。',ans:true,kw:'通行權'},
+  {id:293,type:'tf',q:'車輛與裝備停放時應拉妥手煞並以輪檔或使用液壓支架固定。',ans:true,kw:'車輛與裝備停放'},
+  {id:294,type:'tf',q:'桃園國際機場空側駕駛許可之管理單位為桃園機場總務處。',ans:false,kw:'駕駛許可'},
+  {id:295,type:'tf',q:'行使航廈行李處理場之下坡路段，拖車頭須依限速指示牌減速至時速15公里，其餘車輛依「慢行」指示牌及標線減速慢行。',ans:true,kw:'速限'},
+  {id:296,type:'tf',q:'貨機坪內交通道之速限為25公里。',ans:true,kw:'速限'},
+  {id:297,type:'tf',q:'無線電通訊不必複誦指示，僅回答ROGER即可。',ans:false,kw:'無線電'},
+  {id:298,type:'tf',q:'車輛通行證A類證不得通行環場道。',ans:false,kw:'環場道'},
+  {id:299,type:'tf',q:'車輛裝備行駛時，應禮讓航空器及接駁車優先通行。',ans:true,kw:'通行權'},
+  {id:300,type:'tf',q:'貨盤車載運散裝貨盤時，堆放高度不得超過0.8公尺並覆蓋盤網防止貨盤脫落。',ans:false,kw:'貨盤車'},
+  {id:301,type:'tf',q:'遠端接駁停機坪之編號為501-525。',ans:false,kw:'遠端接駁機坪'},
+  {id:302,type:'tf',q:'遠端接駁機坪之編號為A1-A9。',ans:false,kw:'遠端接駁機坪'},
+  {id:303,type:'tf',q:'下包廠商無空側駕駛許可時，應有持有空側駕駛許可之駕駛引導進出。',ans:true,kw:'駕駛許可'},
+  {id:304,type:'tf',q:'車輛不可圖一時之便停放於空橋下方之紅線區。',ans:true,kw:'空橋'},
+  {id:305,type:'tf',q:'車輛裝備不得穿越機翼或機腹下方。',ans:true,kw:'機翼淨空線'},
+  {id:306,type:'tf',q:'進入空側不論是在操作區或活動區，車輛應備有閃光警示燈及桃園機場平面圖。',ans:true,kw:'車燈、場面圖'},
+  {id:307,type:'tf',q:'航空公司駕駛員在停機坪上檢查飛機時，不須穿著反光背心。',ans:false,kw:'反光背心'},
+  {id:308,type:'tf',q:'只有執行接機之運務人員，才需在機坪上穿著反光背心。',ans:false,kw:'反光背心'},
+  {id:309,type:'tf',q:'航空公司接機之運務人員，在機坪上可不穿反光背心。',ans:false,kw:'反光背心'},
+  {id:310,type:'tf',q:'天氣不佳時車輛在交通道行駛，才需將車頂之閃光警示燈開亮，並使用車燈。',ans:false,kw:'車燈'},
+  {id:311,type:'tf',q:'場內駕駛許可持證人離職，應由持證人所屬單位收回該證繳交業務處註銷。',ans:false,kw:'駕駛許可'},
+  {id:312,type:'tf',q:'航空器滑行較慢，車輛可由滑行之航空器前闖越或並駕齊驅。',ans:false,kw:'通行權'},
+  {id:313,type:'tf',q:'機場作業車輛於停機坪作業時，若趕時間可以由滑行中之航空器前方快速通過。',ans:false,kw:'通行權'},
+  {id:314,type:'tf',q:'車輛通行證的B證，可以穿越跑滑道。',ans:false,kw:'通行權'},
+  {id:315,type:'tf',q:'輪檔是餐車必備的裝備，小型車不需使用。',ans:false,kw:'輪檔'},
+  {id:316,type:'tf',q:'停機坪上的地面裝備與車輛須使用輪檔，航空器則不需使用。',ans:false,kw:'輪檔'},
+  {id:317,type:'tf',q:'機坪地勤作業車輛及機具，為達到警示效果，車頂可架設紅色或藍色閃光燈。',ans:false,kw:'車燈'},
+  {id:318,type:'tf',q:'日間能見度清晰，視野良好，在交通道行駛時，只需開車頂之閃光警示燈，大燈不必開啟。',ans:false,kw:'車燈'},
+  {id:319,type:'tf',q:'政府機關的公務車輛進入環場道時，車身只要有明顯機關名稱標誌即可，不必在車頂架設閃光燈。',ans:false,kw:'車燈'},
+  {id:320,type:'tf',q:'駕駛許可持有人離職時，該證自動失效，無須繳回機場公司承辦單位註銷。',ans:false,kw:'駕駛許可'},
+  {id:321,type:'tf',q:'駕駛許可持證人離職時，應由持證人所屬單位自行銷毀該證。',ans:false,kw:'駕駛許可'},
+  {id:322,type:'tf',q:'領用臨時車輛通行證之車輛於機場行駛時，不需具備閃光燈、輪檔、滅火器、車身標誌。',ans:false,kw:'車輛通行證'},
+  {id:323,type:'tf',q:'拖車行駛時，為考量安全，其所拖掛之貨板車或貨櫃內最多僅可載1個人。',ans:false,kw:'拖車'},
+  {id:324,type:'tf',q:'施工車輛駕駛人未具有場內駕駛許可，無人引導不可在場內行駛。',ans:true,kw:'駕駛許可'},
+  {id:325,type:'tf',q:'航空器停妥關車並安置輪檔後，須待耳機員哨音或手勢，或停機引導員指示，靠機裝備需等安全錐擺放完成始可接近該航空器作業。',ans:true,kw:'靠機'},
+  {id:326,type:'tf',q:'拖車行駛時，其所拖掛之貨板車或貨櫃內不得載人。',ans:true,kw:'拖車'},
+  {id:327,type:'tf',q:'拖車行駛時，其所拖掛之貨板車或貨櫃內得載人。',ans:false,kw:'拖車'},
+  {id:328,type:'tf',q:'車輛行駛於空側，嚴禁闖越航空器前方，必要時，得就近於後方穿越。',ans:false,kw:'通行權'},
+  {id:329,type:'tf',q:'地面裝備、貨物、器材、車輛可隨意排列於裝備區或指定之停放區內，無需注意保持該區之清潔。',ans:false,kw:'裝備區'},
+  {id:330,type:'tf',q:'借臨時車輛通行證之車輛於機場內行駛時，只須具備閃光燈、輪檔、滅火器、車身標誌，不須強制汽車責任保險。',ans:false,kw:'車輛通行證'},
+  {id:331,type:'tf',q:'場內駕駛許可持有人離職時，應由持證人所屬單位收回該證繳交航桃園機場公司航務處註銷。',ans:true,kw:'駕駛許可'},
+  {id:332,type:'tf',q:'場內駕駛許可持有人離職時，應由航警局所屬單位收回該證繳交航桃園機場公司航務處註銷。',ans:false,kw:'駕駛許可'},
+  {id:333,type:'tf',q:'在本機場活動區內操作車輛或地面裝備，應取得航務處核發之「桃園國際機場空側駕駛許可」。',ans:true,kw:'空側區域'},
+  {id:334,type:'tf',q:'跑道入侵係指在機場內，航空器、車輛或人員異常出現在航空器起降保護區平面上。',ans:true,kw:'跑道入侵'},
+  {id:335,type:'tf',q:'無論白天或夜間在交通道行駛車輛時，應將車頂之閃光警示燈開啟，車燈使用近光燈。',ans:true,kw:'車燈'},
+  {id:336,type:'tf',q:'在活動區行駛之車輛應全天開啟大燈及車頂閃光警示燈。',ans:true,kw:'車燈'},
+  {id:337,type:'tf',q:'機坪作業車輛機具，車身應有明顯單位名稱標誌，為加強安全，車頂可架設紅色閃光燈。',ans:false,kw:'車燈'},
+  {id:338,type:'tf',q:'航空警察局巡邏在停機坪執行警戒任務時，要穿著反光背心。',ans:true,kw:'反光背心'},
+  {id:339,type:'tf',q:'車輛行駛於劃定之交通道，穿越航機滑行路線(如E、W1、W2、Q滑行道)，應於停等標線標誌前確實停等，觀察航空器動態後，才可通行。航空器擁有絕對優先權，嚴禁強行穿越。',ans:true,kw:'停等'},
+  {id:340,type:'tf',q:'場內各式車輛駕駛許可若經毀損不易辨識，可直接作廢，並可免費換領新證。',ans:false,kw:'換證'},
+  {id:341,type:'tf',q:'車輛禁止由滑行之航空器前強行闖越或並列駕駛。',ans:true,kw:'闖越'},
+  {id:342,type:'tf',q:'申請操作各式空側作業車輛駕駛許可者，需持單位「桃園國際機場靠機裝備完訓紀錄表」至航務處值班教官簽名認證。',ans:true,kw:'駕駛許可'},
+  {id:343,type:'tf',q:'車道管制員於滑行進停機位之航機機尾通過交通道時結束車道管制。',ans:false,kw:'行車安全'},
+  {id:344,type:'tf',q:'航機拖車將航機拖行進入停機位時，車道管制員於航機機尾通過交通道時結束車道管制。',ans:true,kw:'行車安全'},
+  {id:345,type:'tf',q:'北交通道車輛穿越E滑行道之通行標準：北側拖機只要尚未轉向E滑行道方向前，車輛可通行。',ans:true,kw:'穿越滑行道'},
+  {id:346,type:'tf',q:'北交通道車輛穿越E滑行道之通行標準：E滑行道上往北的拖機未抵達EH1，車輛可通行。',ans:true,kw:'穿越滑行道'},
+  {id:347,type:'tf',q:'北交通道車輛穿越E滑行道之通行標準：E滑行道上往北的拖機停等於EH1前，未開啟雙黃燈，車輛不可通行。',ans:false,kw:'穿越滑行道'},
+  {id:348,type:'tf',q:'航機使用A-VDGS進坪導引作業時，航機前方交通道車輛可以通行。',ans:true,kw:'交通道'},
+  {id:349,type:'tf',q:'航機前方交通道擺放三角錐時，車輛仍可通行。',ans:false,kw:'交通道'},
+  {id:350,type:'tf',q:'C15後方外交通道轉彎處延伸至C18繪設雙白實線區隔機坪區及滑行道，地面作業裝備與人員不可進入滑行道地帶。',ans:true,kw:'標線標誌'},
+  {id:351,type:'tf',q:'C11~C18交通道及雙白實線以南為滑行道地帶，未經塔台許可，人員及車輛可以進入。',ans:false,kw:'標線標誌'},
+  {id:352,type:'tf',q:'A1-A8、B1-B8空橋橋下所有車輛皆可穿越通行。',ans:false,kw:'空橋作業區域'},
+  {id:353,type:'tf',q:'C9/C10間內交通道往外交通道為單向通行，僅可由外交通道往內交通道行駛。',ans:false,kw:'交通道'},
+  {id:354,type:'tf',q:'於A/D機坪之外交通道行駛時，若發現自身車輛零件/裝備/貨物掉落於交通道旁的滑行道上，且當下無航機進出該停機位，是否應立即撿拾？',ans:false,kw:'FOD'},
+  {id:355,type:'tf',q:'於A/D機坪之外交通道行駛時，若發現自身車輛零件/裝備/貨物掉落於交通道旁的機坪內，且當下無航機進出該停機位，是否應立即撿拾？',ans:true,kw:'FOD'},
+  {id:356,type:'tf',q:'停機位裝備區末端之白斜線區是否能停放裝有貨物之貨盤？',ans:false,kw:'標線標誌'},
+  {id:357,type:'tf',q:'停機位裝備區末端之白斜線區是否能停放空貨盤？',ans:true,kw:'標線標誌'},
+  {id:358,type:'tf',q:'駕駛於北交通道欲從A1側穿越E滑行道至消防北站側時，若看見航機於N上往N與P10交口方向滑行(未轉正E)，是否可穿越E滑行道？',ans:true,kw:'穿越滑行道'},
+  {id:359,type:'tf',q:'駕駛於北交通道欲從A1側穿越E滑行道至消防北站側時，若看見航機於E上往P方向滑行，但尚未通過EH1(航郵中心建物南側)，是否可穿越E滑行道？',ans:false,kw:'穿越滑行道'},
+  {id:360,type:'tf',q:'駕駛車輛於外交通道時，若已通過尚未開始管制之車道管制員(航機即將後推)，而前方(對向)車道管制員此時開始管制(舉手)，是否可繼續通過該停機位後方？',ans:true,kw:'航機後推'},
+  {id:361,type:'tf',q:'駕駛車輛於內交通道欲進入停機坪時，若該停機位之航機為靜止，且航機周圍無擺放安全錐(當日無風大情況)，非該航班作業車輛是否可進入該停機位？',ans:false,kw:'交通道'},
+  {id:362,type:'tf',q:'駕駛車輛於內交通道欲進入停機坪時，若該停機位之航機正在後推，則應於機翼間距淨空線(紅線)外等待至航機機翼脫離停機坪，始得進入該停機位。',ans:true,kw:'交通道'},
+  {id:363,type:'tf',q:'駕駛車輛於內交通道欲進入停機坪時，若該停機位之航機正在滑行進入停機坪，則應等待航機鼻輪於停止線上完全停止時使得進入該停機位，並無須觀察外交通道之車道管制員手勢。',ans:false,kw:'交通道'},
+  {id:364,type:'tf',q:'Z區停機坪之交通道位於航機機首側。',ans:true,kw:'交通道'},
+  {id:365,type:'tf',q:'Z區停機坪之交通道位於航機機尾側。',ans:false,kw:'交通道'},
+  {id:366,type:'tf',q:'Z區停機坪交通道速限為40公里/時。',ans:true,kw:'交通道'},
+  {id:367,type:'tf',q:'Z區停機坪交通道速限為25公里/時。',ans:false,kw:'交通道'},
+  {id:368,type:'tf',q:'持有D類空側駕駛資格者是否可通行Z區停機坪交通道？',ans:false,kw:'交通道'},
+  {id:369,type:'tf',q:'持有Ｂ類空側駕駛資格者是否可通行Z區停機坪交通道？',ans:true,kw:'交通道'},
+  {id:370,type:'tf',q:'車輛通行證為D類證之車輛是否可通行Z區停機坪交通道？',ans:false,kw:'交通道'},
+  {id:371,type:'tf',q:'車輛通行證為B類證之車輛是否可通行Z區停機坪交通道？',ans:true,kw:'交通道'},
+  {id:372,type:'tf',q:'第三航廈北登機廊廳之交通道為內交通道，限速25公里/時。',ans:true,kw:'交通道'},
+  {id:373,type:'tf',q:'第三航廈北登機廊廳之交通道為外交通道，限速25公里/時。',ans:false,kw:'交通道'},
+  {id:374,type:'tf',q:'第三航廈北登機廊廳之交通道為內交通道，限速40公里/時。',ans:false,kw:'交通道'},
+  {id:375,type:'tf',q:'第三航廈北登機廊廳之交通道為外交通道，限速40公里/時。',ans:false,kw:'交通道'},
+  {id:376,type:'tf',q:'駕駛車輛於第三航廈北登機廊廳內交通道時，若前方停機位有航機正在使用A-VDGS(先進目視停靠導引系統)滑行進入停機位，應停等並待航機定位後使得繼續通行。',ans:false,kw:'交通道'},
+  {id:377,type:'tf',q:'航機拖車將航機拖行進入第三航廈北登機廊廳(D11-D18)停機位時，無須車道管制員進行交通管制。',ans:true,kw:'交通道'},
+  {id:378,type:'tf',q:'依據桃園國際機場公司114年2月11日安全委員會航務分組統計，「未確實注意周遭動態」為桃園機場空側發生車輛/裝備碰撞最常見的發生原因。',ans:true,kw:'碰撞'},
+  {id:379,type:'tf',q:'在停機坪裝備區作業無須注意行經裝備區之車輛動態。',ans:false,kw:'碰撞'},
+  {id:380,type:'tf',q:'車輛、裝備進出機坪時限速15公里/時。',ans:true,kw:'速限'},
+  {id:381,type:'tf',q:'經機坪外交通道時，須與前車保持安全距離，並注意前方是否有前車停等航機進坪/後推交管。',ans:true,kw:'碰撞'},
+  {id:382,type:'tf',q:'跨越滑行道時，須與前車保持安全距離，並注意前方是否有前車於停等線前等待航機通行。',ans:true,kw:'碰撞'},
+  {id:383,type:'tf',q:'車道管制員開始交通管制時可以依照標線進出停機坪。',ans:false,kw:'闖越航機'},
+  {id:384,type:'tf',q:'到場航機或拖機已進入機坪，車輛就可以依照標線進出停機坪。',ans:false,kw:'闖越航機'},
+  {id:385,type:'tf',q:'「斜坡車道」為連結航廈地下行李處理場之勤務道路，禁止停放車輛及裝備。',ans:true,kw:'違規停放'},
+  {id:386,type:'tf',q:'駕駛車輛/裝備前應檢查車輛/裝備狀況，避免零件掉落，因掉落零件可能變成航機滑行或拖行動線上之FOD(外來異物)，致航機輪胎受損。',ans:true,kw:'FOD'},
+  {id:387,type:'tf',q:'倒車應注意四周車輛動態，並注意車輛與四周物體之間距，避免碰撞。',ans:true,kw:'碰撞'},
+  {id:388,type:'tf',q:'空側違規事件處罰依據桃園國際機場空側違規事件處理原則規定辦理。',ans:true,kw:'罰則'},
+  {id:389,type:'tf',q:'無空側駕駛資格人經有空側駕駛資格人陪同或引導下駕駛車輛，如有違規行為，處罰其陪同人。',ans:true,kw:'罰則'},
+  {id:390,type:'tf',q:'無空側駕駛資格之行為人受空側駕駛資格停權之處罰時，以吊扣機場通行證代之。',ans:true,kw:'罰則'},
+  {id:391,type:'tf',q:'依據桃園國際機場空側違規事件處理原則違規記點表，超速(超過最高速限11公里以上40公里以下) 屬於高度風險，記點9點，並需於7日內提出改善報告。',ans:true,kw:'罰則'},
+  {id:392,type:'tf',q:'依據桃園國際機場空側違規事件處理原則違規記點表，闖越操作區執勤車輛屬於高度風險，記點9點，並需於7日內提出改善報告。',ans:true,kw:'罰則'},
+  {id:393,type:'tf',q:'駕駛人之駕駛資格因違規行為註銷後，自註銷日起起算12個月後才可重新申請？',ans:true,kw:'罰則'},
+  {id:394,type:'tf',q:'因無照使違規吊扣通行工作證者，於吊扣期間不得領用臨時工作證。',ans:true,kw:'罰則'},
+  {id:395,type:'tf',q:'車輛、裝備進出機坪時限速25公里/時。',ans:false,kw:'速限'},
+  {id:396,type:'tf',q:'於本機場空側範圍內，可於吸菸區與無人之戶外開放空間吸菸。',ans:false,kw:'吸菸'},
+  {id:397,type:'tf',q:'在跑道內造成FOD會使空側駕駛資格停權30天且須於7日內提出改善報告。',ans:true,kw:'FOD'},
+
+  // === 圖示題 22題 ===
+  {id:501,type:'picture',img:'p1',q:'有關裝備區白斜線格之敘述下列何者為非？',opts:['停車格標示「交管車輛專用」字樣，空盤車可以停放','裝備區白斜線格限空盤車停放','停車格標示「交管車輛專用」字樣，僅供交管車輛於進行車道管制時停放','設置目的為降低交管人員車輛停放造成視線遮蔽風險'],ans:0,kw:'裝備停放'},
+  {id:502,type:'picture',img:'p2',q:'有關第二航廈D5R候機室前旅客登車通道及抵達通道敘述何者有誤？',opts:['裝備、車輛可以停放在該區任何空位處','紅色標線為「D5R旅客接駁區」','「D5R旅客接駁區」除緊急應變、演習或專案許可外，禁止任何裝備車輛進出及停放','此處主要為旅客接駁車輛使用'],ans:0,kw:'標線標誌'},
+  {id:503,type:'picture',img:'p3',q:'依據此圖航機拖車位置（拖機已通過EH1），車輛是否能通行穿越E滑行道？',opts:['可通行','不可通行'],ans:0,kw:'穿越滑行道'},
+  {id:504,type:'picture',img:'p4',q:'依據此圖航機拖車位置（拖機尚未通過EH1），車輛是否能通行穿越E滑行道？',opts:['不可通行','可通行'],ans:0,kw:'穿越滑行道'},
+  {id:505,type:'picture',img:'p5',q:'有關此圖標誌之敘述何者有正確？',opts:['設置在交通道穿越滑行道停等線前','停車再開，不需要確認滑行道上航機、拖機、值勤車輛動態','穿越前方滑行道前需要另外獲得塔台許可'],ans:0,kw:'標線標誌'},
+  {id:506,type:'picture',img:'p6',q:'有關此圖標誌之敘述何者有誤？',opts:['停車再開，確認不影響滑行道上航機、拖機、值勤車輛即可進入或穿越','設置在交通道或勤務道，接近滑行道或跑道前','進入前方跑道或滑行道需要另外獲得塔台許可','前方跑道、滑行道區域須為A類車輛及具有A類駕駛許可才可進入'],ans:0,kw:'標線標誌'},
+  {id:507,type:'picture',img:'p7',q:'此圖標線表示：',opts:['停車再開','減速慢行'],ans:0,kw:'標線標誌'},
+  {id:508,type:'picture',img:'p8',q:'此圖標線表示：',opts:['減速慢行','停車再開'],ans:0,kw:'標線標誌'},
+  {id:509,type:'picture',img:'p9',q:'此圖標線表示：',opts:['停機坪邊界','車道邊線'],ans:0,kw:'標線標誌'},
+  {id:510,type:'picture',img:'p10',q:'此圖標線表示：',opts:['選項皆是','車道邊線的一種，表示該路段有航機通行','貨機坪內車道標線'],ans:0,kw:'標線標誌'},
+  {id:511,type:'picture',img:'p11',q:'有關此圖標線之敘述何者為非？',opts:['車輛進出進入機翼間距淨空線(紅線)跟行駛一般道路一樣，只要依據行車方向行駛即可，沒有其他規定','紅色標線用來標示航機進出停機坪時應保持淨空之區域','白色箭頭標線為行車方向','紅線為機翼間距淨空線'],ans:0,kw:'標線標誌'},
+  {id:512,type:'picture',img:'p12',q:'此圖標線表示：',opts:['禁止進入','保持淨空'],ans:0,kw:'標線標誌'},
+  {id:513,type:'picture',img:'p13',q:'此圖標線表示：',opts:['保持淨空','禁止進入'],ans:0,kw:'標線標誌'},
+  {id:514,type:'picture',img:'p14',q:'此圖標線表示：',opts:['保持淨空','禁止進入'],ans:0,kw:'標線標誌'},
+  {id:515,type:'picture',img:'p15',q:'此圖標線表示：',opts:['僅限停放空盤車','僅線停放交管車輛'],ans:0,kw:'標線標誌'},
+  {id:516,type:'picture',img:'p16',q:'有關此圖標線之敘述何者正確：',opts:['設置在停機坪裝備停放區與外交通道之間','「交管車輛專用」停車格，所有車輛都可以停放','白斜線格所有車輛、裝備都可以停放','設置目的是為了讓裝備擺放整齊'],ans:0,kw:'標線標誌'},
+  {id:517,type:'picture',img:'p17',q:'有關此圖標線之敘述何者為非：',opts:['無接駁車使用期間，其他車輛可以臨時停放','接駁車專用停車格','平時應保持淨空'],ans:0,kw:'標線標誌'},
+  {id:518,type:'picture',img:'p18',q:'此圖標線表示：',opts:['停機位編號','速限'],ans:0,kw:'標線標誌'},
+  {id:519,type:'picture',img:'p19',q:'機坪四周闖越航機熱點，圖中○區域應注意事項為何？',opts:['注意是否有交管人員','注意三角錐是否已收','注意飛機是否已掛拖車'],ans:0,kw:'闖越航機'},
+  {id:520,type:'picture',img:'p20',q:'機坪四周闖越航機熱點，圖中△區域應注意事項為何？',opts:['注意三角錐是否已收','注意是否有交管人員','注意飛機是否已掛拖車'],ans:0,kw:'闖越航機'},
+  {id:521,type:'picture',img:'p21',q:'機坪四周闖越航機熱點，圖中□區域應注意事項為何？',opts:['注意飛機是否已掛拖車','注意三角錐是否已收','注意是否有交管人員'],ans:0,kw:'闖越航機'},
+  {id:522,type:'picture',img:'p22',q:'若車輛進出停機坪會進入停機坪淨空區，什麼狀況下車輛可以進出停機坪？',opts:['車道管制員結束管制，且到場航機或拖機進入機坪已定位時。','車道管制員結束管制，無須確認停機坪內狀況，即可進出。','車道管制員開始交通管制時'],ans:0,kw:'闖越航機'},
+];
+
+// === STATE ===
+let mode = 'all';
+let pool = [];
+let current = 0;
+let answered = false;
+let correctCount = 0;
+let wrongCount = 0;
+let wrongIds = new Set();
+let sessionAnswered = new Set();
+let shuffledOpts = [];
+const LABELS = ['A','B','C','D'];
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach((b,i) => {
+    const modes = ['all','single','truefalse','picture','random','mock40','wrong'];
+    b.classList.toggle('active', modes[i] === m);
+  });
+  restartQuiz();
+}
+
+function buildPool() {
+  let base = [...QUESTIONS];
+  if (mode === 'single') base = base.filter(q=>q.type==='single');
+  else if (mode === 'truefalse') base = base.filter(q=>q.type==='tf');
+  else if (mode === 'picture') base = base.filter(q=>q.type==='picture');
+  else if (mode === 'mock40') {
+    const singles = QUESTIONS.filter(q=>q.type==='single').sort(()=>Math.random()-.5).slice(0,14);
+    const tfs = QUESTIONS.filter(q=>q.type==='tf').sort(()=>Math.random()-.5).slice(0,22);
+    const pics = QUESTIONS.filter(q=>q.type==='picture').sort(()=>Math.random()-.5).slice(0,4);
+    base = [...singles, ...tfs, ...pics].sort(()=>Math.random()-.5);
+  }
+  else if (mode === 'wrong') {
+    base = base.filter(q=>wrongIds.has(q.id));
+    if (!base.length) { alert('目前沒有錯題！請先作答後再複習。'); return false; }
+  }
+  if (mode === 'random') base = base.sort(()=>Math.random()-0.5);
+  return base;
+}
+
+function restartQuiz() {
+  const p = buildPool();
+  if (!p) return;
+  pool = p; current = 0; answered = false;
+  correctCount = 0; wrongCount = 0; sessionAnswered = new Set();
+  document.getElementById('result-screen').classList.remove('show');
+  document.getElementById('quiz-area').style.display = 'block';
+  updateStats(); renderQuestion();
+}
+
+function renderQuestion() {
+  if (current >= pool.length) { showResult(); return; }
+  const q = pool[current];
+  answered = false;
+  updateStats();
+  const area = document.getElementById('quiz-area');
+  const typeLabel = q.type === 'single' ? '單選題' : q.type === 'tf' ? '是非題' : '圖示題';
+
+  let imgHTML = q.img ? `<div class="q-image">${IMG[q.img]}</div>` : '';
+
+  let optHTML = '';
+  if (q.type === 'tf') {
+    optHTML = `<div class="tf-options">
+      <button class="tf-opt tf-true" onclick="answerTF(true)" id="tf-true">○<div class="tf-sub">正確</div></button>
+      <button class="tf-opt tf-false" onclick="answerTF(false)" id="tf-false">✕<div class="tf-sub">錯誤</div></button>
+    </div>`;
+  } else {
+    const indices = q.opts.map((_,i)=>i).sort(()=>Math.random()-.5);
+    shuffledOpts = indices;
+    optHTML = `<div class="options">` +
+      indices.map((origIdx, displayPos) => `
+        <button class="option" onclick="answer(${displayPos})" id="opt-${displayPos}">
+          <span class="option-letter">${LABELS[displayPos]}</span>
+          <span>${q.opts[origIdx]}</span>
+        </button>`).join('') + `</div>`;
+  }
+
+  area.innerHTML = `
+    <div class="card">
+      <div class="q-meta">
+        <span class="q-num">Q${current+1}</span>
+        <span class="q-type">${typeLabel}</span>
+        <span class="q-keyword"># ${q.kw}</span>
+      </div>
+      ${imgHTML}
+      <div class="q-text">${q.q}</div>
+      ${optHTML}
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="actions" id="actions">
+      <button class="btn btn-secondary" onclick="skipQuestion()">跳過</button>
+    </div>`;
+}
+
+function answer(displayPos) {
+  if (answered) return;
+  answered = true;
+  const q = pool[current];
+  const originalIdx = shuffledOpts[displayPos];
+  const correct = originalIdx === q.ans;
+  const correctDisplayPos = shuffledOpts.indexOf(q.ans);
+  sessionAnswered.add(q.id);
+  if (correct) { correctCount++; wrongIds.delete(q.id); }
+  else { wrongCount++; wrongIds.add(q.id); }
+  shuffledOpts.forEach((_,i) => {
+    const btn = document.getElementById(`opt-${i}`);
+    btn.disabled = true;
+    if (i === correctDisplayPos) btn.classList.add('correct');
+    else if (i === displayPos) btn.classList.add('wrong');
+  });
+  showFeedback(correct, correct ? '' : `正確答案：${LABELS[correctDisplayPos]}. ${q.opts[q.ans]}`);
+  updateActions();
+}
+
+function answerTF(val) {
+  if (answered) return;
+  answered = true;
+  const q = pool[current];
+  const correct = val === q.ans;
+  sessionAnswered.add(q.id);
+  if (correct) { correctCount++; wrongIds.delete(q.id); }
+  else { wrongCount++; wrongIds.add(q.id); }
+  document.getElementById('tf-true').disabled = true;
+  document.getElementById('tf-false').disabled = true;
+  if (q.ans === true) {
+    document.getElementById('tf-true').classList.add('correct');
+    if (!correct) document.getElementById('tf-false').classList.add('wrong');
+  } else {
+    document.getElementById('tf-false').classList.add('correct');
+    if (!correct) document.getElementById('tf-true').classList.add('wrong');
+  }
+  showFeedback(correct, `正確答案：${q.ans ? '○ 正確' : '✕ 錯誤'}`);
+  updateActions();
+}
+
+function showFeedback(correct, hint) {
+  const fb = document.getElementById('feedback');
+  fb.className = `feedback show ${correct ? 'correct-fb' : 'wrong-fb'}`;
+  fb.innerHTML = `<span class="feedback-icon">${correct ? '✅' : '❌'}</span>${correct ? '答對了！' : '答錯了。'} ${hint}`;
+}
+
+function updateActions() {
+  document.getElementById('actions').innerHTML = `
+    <button class="btn btn-primary" onclick="nextQuestion()">下一題 →</button>
+    <button class="btn btn-secondary" onclick="skipQuestion()">跳過</button>`;
+}
+
+function nextQuestion() { current++; renderQuestion(); }
+function skipQuestion() { current++; if (current >= pool.length) showResult(); else renderQuestion(); }
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = pool.length || 0;
+  document.getElementById('stat-done').textContent = sessionAnswered.size;
+  document.getElementById('stat-correct').textContent = correctCount;
+  document.getElementById('stat-wrong').textContent = wrongCount;
+  const pct = pool.length ? Math.round(sessionAnswered.size/pool.length*100) : 0;
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-label').textContent = `${current} / ${pool.length}`;
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+function showResult() {
+  document.getElementById('quiz-area').style.display = 'none';
+  document.getElementById('result-screen').classList.add('show');
+  const total = sessionAnswered.size;
+  const pct = total ? Math.round(correctCount/total*100) : 0;
+  let grade, color, msg;
+  if (pct>=90){grade='優秀 🏆';color='#22c55e';msg='表現卓越！準備好考試了！';}
+  else if(pct>=80){grade='良好 👍';color='#f97316';msg='相當不錯，再複習弱點即可。';}
+  else if(pct>=60){grade='尚可 📚';color='#f59e0b';msg='還需要加強，多複習錯題。';}
+  else{grade='需加強 💪';color='#ef4444';msg='請重新仔細複習題庫。';}
+  document.getElementById('result-score').textContent = pct+'%';
+  document.getElementById('result-score').style.color = color;
+  document.getElementById('result-grade').textContent = grade;
+  document.getElementById('result-msg').textContent = `作答 ${total} 題，答對 ${correctCount} 題，答錯 ${wrongCount} 題。${msg}`;
+}
+
+restartQuiz();
+</script>
+</body>
+</html>
